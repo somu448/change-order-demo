@@ -1,146 +1,152 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Change Order Manager — Demo</title>
+<meta charset="UTF-8">
+<title>Change Order Manager</title>
 <style>
-:root{--bg:#f7f8fb;--card:#ffffff;--accent:#2e1d7f;--muted:#6b7280}
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;background:var(--bg);color:#0f172a}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--card);border-bottom:1px solid #e6e9f2}
-.brand{display:flex;align-items:center;gap:12px}
-.brand img{height:36px}
-.brand .title{font-weight:700;font-size:18px;color:var(--accent)}
-.layout{display:flex;gap:16px;padding:18px}
-.kanban{display:flex;gap:12px;align-items:flex-start;overflow:auto;padding:14px 4px}
-.col{min-width:300px;background:linear-gradient(180deg,#fbfbff,#f6f5ff);border:1px solid rgba(46,29,127,0.06);border-radius:12px;padding:12px}
-.col-head{font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.card-item{background:white;padding:10px;border-radius:10px;margin-bottom:10px;box-shadow:0 4px 10px rgba(18,20,42,0.04)}
-.card-meta{font-size:13px;color:var(--muted);margin-top:6px}
-.card-actions{display:flex;gap:8px;align-items:center;margin-top:10px}
-.table{width:100%;border-collapse:collapse}
-.table th,.table td{padding:8px;border-bottom:1px solid #eef2ff;text-align:left}
-.footer-note{font-size:13px;color:var(--muted);margin-top:8px}
-.badge{background:#efe8ff;color:var(--accent);padding:4px 10px;border-radius:999px;font-size:12px}
-.top-actions{display:flex;gap:8px;align-items:center}
-.page-center{height:calc(100vh - 40px);display:flex;align-items:center;justify-content:center}
-a.link{color:var(--accent);text-decoration:none}
-/* --- TAB LIFECYCLE VIEW --- */
-.tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-.tab-btn { padding: 8px 16px; border: none; border-radius: 8px; background: #eaeaff; cursor: pointer; font-weight:500;}
-.tab-btn.active { background: var(--accent); color: white; }
-.tab-lifecycle-view { padding: 18px; }
-.order-list { display: flex; flex-direction: column; gap: 12px; }
+  body { font-family: sans-serif; margin: 0; }
+  .layout { display: flex; }
+  .sidebar { width: 200px; padding: 10px; background: #f4f4f4; }
+  .main { flex: 1; padding: 20px; }
+  .tab-btn { display: block; padding: 10px; cursor: pointer; margin-bottom: 5px; border: none; background: #ddd; }
+  .tab-btn.active { background: #bbb; font-weight: bold; }
+  .card { border: 1px solid #ccc; border-radius: 6px; margin-bottom: 20px; padding: 10px; background: white; }
+  .badge { display: inline-block; padding: 4px 8px; background: #eee; border-radius: 4px; margin-right: 5px; }
+  a { cursor: pointer; color: blue; }
 </style>
 </head>
 <body>
-<header class="topbar">
-  <div class="brand">
-    <img src='data:image/png;base64,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'/>
-    <div><div class="title">Change Order Manager</div><div style="font-size:12px;color:var(--muted)">Demo — CUBIC</div></div>
-  </div>
-  <div class="top-actions">
-    <div id="session-info" style="font-size:14px;color:var(--muted)">Not signed in</div>
-  </div>
-</header>
 
 <div id="app-root"></div>
 
 <script>
-// Single-file demo app - vanilla JS, no frameworks
-const STORAGE_KEY = 'change_order_demo_final_v3';
-const DEMO_PASSWORD = 'demo123';
-const STAGES = ["Request Created", "Contracts Team Review & Classification (via AI)", "PMO Review", "Pricing Estimation Preparation", "Pricing Estimation & Commercial Modeling", "Governance Document Preparation", "Customer Response (if required)", "SAP Order Creation / Update", "Internal Review & Approval", "Financials Update", "Deployment & Communication"];
+const ROLES = {
+  customer: ["My Requests", "New Request"],
+  admin: ["All Requests", "Users"],
+  supplier: ["Assigned Requests"]
+};
 
-const DEMO_USERS = [{"email": "admin@example.com", "name": "Admin User", "role": "Admin", "team": "Admin", "active": true}, {"email": "customer@example.com", "name": "Customer", "role": "Customer", "team": "Customers", "active": true}, {"email": "contracts@example.com", "name": "Contracts", "role": "Contracts", "team": "Contracts", "active": true}, {"email": "pmo@example.com", "name": "PMO", "role": "PMO", "team": "PMO", "active": true}, {"email": "pricing@example.com", "name": "Pricing", "role": "Pricing", "team": "Pricing", "active": true}, {"email": "governance@example.com", "name": "Governance", "role": "Governance", "team": "Governance", "active": true}, {"email": "sap@example.com", "name": "SAP", "role": "SAP", "team": "SAP", "active": true}, {"email": "finance@example.com", "name": "Finance", "role": "Finance", "team": "Finance", "active": true}];
+const STAGES = ["Submitted", "In Review", "Approved", "Completed"];
 
-function load(){ try{const r=localStorage.getItem(STORAGE_KEY); return r?JSON.parse(r):null;}catch(e){return null} }
-function save(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
-function seed(){ if(load()) return; const orders=[]; for(let i=0;i<STAGES.length;i++){ orders.push({ id:'o_'+Math.random().toString(36).substr(2,9), title:'Demo Change Order '+(i+1), description:'Demo change order seeded at stage: '+STAGES[i], stage:STAGES[i], createdBy:'customer@example.com', priority:['Low','Medium','High'][(i+1)%3], attachments:[], history:[{when:new Date().toISOString(), by:'system', from:'n/a', to:STAGES[i]}] }) } save({users:DEMO_USERS, orders, stages:STAGES}); }
-seed();
+let appState = {
+  session: { email: "alice@example.com", role: "customer" },
+  orders: [
+    { id: "1", title: "Order A", stage: "Submitted", priority: "High", createdBy: "alice@example.com", description: "Replace part A", history: [] },
+    { id: "2", title: "Order B", stage: "In Review", priority: "Medium", createdBy: "bob@example.com", description: "Update manual", history: [] }
+  ],
+  activeTab: null
+};
 
-function getState(){ return load(); }
-function setState(fn){ const s = load(); const next = fn(s); save(next); render(); }
-function uid(){ return 'id_'+Math.random().toString(36).substr(2,9); }
-function setSession(u){ localStorage.setItem('com_demo_session', JSON.stringify(u)); render(); }
-function getSession(){ const s=localStorage.getItem('com_demo_session'); return s?JSON.parse(s):null; }
-function clearSession(){ localStorage.removeItem('com_demo_session'); render(); }
-
-function el(tag, attrs, ...children){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(k==='on'){ for(const ev in attrs[k]) e.addEventListener(ev, attrs[k][ev]); } else if(k==='style'){ Object.assign(e.style, attrs[k]); } else e.setAttribute(k, attrs[k]); } children.flat().forEach(c=>{ if(c==null) return; if(typeof c==='string'||typeof c==='number') e.appendChild(document.createTextNode(c)); else e.appendChild(c); }); return e; }
-function clear(node){ while(node.firstChild) node.removeChild(node.firstChild); }
-
-function renderLogin(root){ const state=getState(); const card=el('div',{class:'card login-card'}, el('h2', null, 'Change Order Manager — Demo'), el('form',{on:{submit(e){e.preventDefault(); const email=e.target.email.value.trim().toLowerCase(); const pwd=e.target.pwd.value; const u=(state&&state.users)||[]; const found=u.find(x=>x.email===email); if(!found){ alert('Use one of the demo accounts in Admin.'); return; } if(pwd!==DEMO_PASSWORD){ alert('Password is demo123'); return; } setSession(found); }}}, el('label', null, 'Email'), el('input',{name:'email',class:'input',placeholder:'admin@example.com'}), el('label', null, 'Password'), el('input',{name:'pwd',type:'password',class:'input',placeholder:'demo123'}), el('div',{style:{marginTop:'8px'}}, el('button',{class:'button',type:'submit'}, 'Log in')) ), el('div',{style:{marginTop:'10px'}}, el('small', null, 'Quick pick: '), ...['Admin','Customer','Contracts','PMO','Pricing','Governance','SAP','Finance'].map(r=> el('button',{class:'small-btn',style:{marginLeft:'8px'}, on:{click(e){ e.preventDefault(); const u=(state&&state.users)||[]; const found=u.find(x=>x.role.toLowerCase()===r.toLowerCase()); if(found) setSession(found); }}}, r) ) ), el('div',{class:'footer-note'}, el('small', null, 'Demo password: '), el('b', null, 'demo123') ) ); clear(root); root.appendChild(el('div',{class:'page-center'}, card)); document.getElementById('session-info').textContent='Not signed in'; }
-
-function renderTabLifecycle(root) {
-  const session = getSession();
-  if(!session){ renderLogin(root); return; }
-  const s = getState();
-  document.getElementById('session-info').textContent = session.name + ' — ' + session.role;
-
-  // Maintain selected stage in window scope
-  if(!window.selectedStage) window.selectedStage = s.stages[0];
-  let selectedStage = window.selectedStage;
-
-  // Tabs
-  const tabs = el('div', {class: 'tabs'},
-    s.stages.map(stage =>
-      el('button', {
-        class: 'tab-btn' + (stage === selectedStage ? ' active' : ''),
-        on: {click() { window.selectedStage = stage; render(); }}
-      }, stage)
-    )
-  );
-
-  // Orders in selected stage
-  const orders = (s.orders || []).filter(o => o.stage === selectedStage);
-  const orderList = el('div', {class: 'order-list'},
-    orders.length ? orders.map(order =>
-      el('div', {class: 'card-item'},
-        el('div', null, el('a', {
-          href: '#/order/' + order.id,
-          class: 'link',
-          on: {click(e) { e.preventDefault(); location.hash = '#/order/' + order.id; render(); }}
-        }, order.title)),
-        el('div', {class: 'card-meta'}, 'By: ' + order.createdBy),
-        el('div', null, 'Priority: ' + order.priority)
-      )
-    ) : el('div', null, 'No orders in this stage.')
-  );
-
-  // Sidebar
-  const sidebar = el('aside', {class: 'sidebar card'},
-    el('div', null, el('button',{class:'button', on:{click(){ renderTabLifecycle(root); }}}, 'Lifecycle View')),
-    el('div',{style:{marginTop:'10px'}}, el('button',{class:'small-btn', on:{click(){ const t=prompt('Title for new change order'); if(!t) return; const st=getState(); const newO={id:uid(), title:t, description:'', stage:st.stages[0], createdBy:session.email, priority:'Medium', attachments:[], history:[{when:new Date().toISOString(), by:session.email, from:'Created', to:st.stages[0]}]}; st.orders.unshift(newO); save(st); render(); }}}, '+ New Change Order')),
-    session.role==='Admin'? el('div',{style:{marginTop:'10px'}}, el('button',{class:'small-btn', on:{click(){ renderAdmin(root); }}}, 'Admin Panel')):null,
-    el('div',{style:{marginTop:18,fontSize:'13px',color:'#50607a'}}, el('div', null, 'Tips:'), el('div', null, '- Use tabs to view stage.'), el('div', null, '- Admins can add users.'))
-  );
-
-  // Main layout
-  clear(root);
-  root.appendChild(
-    el('div', {class:'layout tab-lifecycle-view'},
-      sidebar,
-      el('main', {class:'main'},
-        tabs,
-        el('h3', null, selectedStage),
-        orderList
-      )
-    )
-  );
+function el(tag, props={}, ...children) {
+  const element = document.createElement(tag);
+  if (props.class) element.className = props.class;
+  if (props.style) Object.assign(element.style, props.style);
+  if (props.on) for (let e in props.on) element.addEventListener(e, props.on[e]);
+  if (props.href) element.setAttribute("href", props.href);
+  if (props.value) element.value = props.value;
+  children.flat().forEach(c => {
+    element.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+  });
+  return element;
 }
 
-function renderAdmin(root){ const session=getSession(); if(!session || session.role!=='Admin'){ alert('Admin only'); location.hash='#/login'; return; } const st=getState(); const card=el('div',{style:{padding:16}}, el('div',{class:'card'}, el('h2', null, 'Admin Panel'), el('button',{class:'button', on:{click:function(){ const email=prompt('Email'); if(!email) return; const name=prompt('Name')||email.split('@')[0]; const role=prompt('Role (Customer/Contracts/PMO/Pricing/Governance/SAP/Finance/Admin)')||'Customer'; const s=load(); s.users.push({email,name,role,team:role,active:true}); save(s); location.hash='#/admin'; render(); }}}, '+ Add User'), el('table',{class:'table', style:{marginTop:12}}, el('thead', null, el('tr', null, el('th', null, 'Email'), el('th', null, 'Name'), el('th', null, 'Role'), el('th', null, 'Team'), el('th', null, 'Active'), el('th', null, 'Actions'))), el('tbody', null, st.users.map(u=> el('tr', null, el('td', null, u.email), el('td', null, u.name), el('td', null, u.role), el('td', null, u.team), el('td', null, u.active? 'Yes':'No'), el('td', null, el('button',{class:'small-btn', on:{click:function(){ const s=load(); const uu=s.users.find(x=>x.email===u.email); uu.active=!uu.active; save(s); location.hash='#/admin'; render(); }}}, u.active? 'Deactivate':'Activate') )) )) ) ) ); clear(root); root.appendChild(card); }
+function clear(elm) { while (elm.firstChild) elm.removeChild(elm.firstChild); }
 
-function renderOrderDetail(id){ const root=document.getElementById('app-root'); const st=getState(); const order=st.orders.find(o=>o.id===id); if(!order) return alert('Order not found'); const session=getSession(); const card=el('div',{class:'card', style:{margin:16}}, el('button',{class:'small-btn', on:{click(){ location.hash='#/dashboard'; render(); }}}, '← Back'), el('h2', null, order.title), el('p', null, el('b', null, 'Stage: '), order.stage), el('p', null, el('b', null, 'Description:')), el('textarea',{rows:6, on:{input:function(e){ const st=load(); const o=st.orders.find(x=>x.id===id); o.description=e.target.value; save(st); } }}, order.description), el('p', null, el('b', null, 'Priority: '), (function(){ const sel=el('select'); ['Low','Medium','High'].forEach(p=>{ const opt=el('option',{value:p}, p); if(order.priority===p) opt.selected=true; sel.appendChild(opt); }); sel.addEventListener('change', function(e){ const st=load(); const o=st.orders.find(x=>x.id===id); o.priority=e.target.value; save(st); }); return sel; })()), el('div',{style:{marginTop:10}}, el('strong', null, 'Change Stage:'), el('div',{style:{display:'flex',gap:8,flexWrap:'wrap',marginTop:8}}, (function(){ const frag=[]; const st=load(); st.stages.forEach(sg=>{ const btn=el('button',{class:'small-btn', on:{click:function(){ const st=load(); const o=st.orders.find(x=>x.id===id); o.history=o.history||[]; o.history.push({when:new Date().toISOString(), by:session.email, from:o.stage, to:sg}); o.stage=sg; save(st); location.hash='#/order/'+id; render(); }} } , sg); if(sg===order.stage) btn.disabled=true; frag.push(btn); }); return frag; })() ) ), el('div',{style:{marginTop:12}}, el('h4', null, 'History'), el('ul', null, order.history.map(h=> el('li', null, new Date(h.when).toLocaleString() + ' — ' + h.by + ' — ' + h.from + ' → ' + h.to )))) ); clear(root); root.appendChild(card); }
+function render() {
+  const root = document.getElementById("app-root");
+  clear(root);
 
-function router(){ const hash = location.hash.replace(/^#\/?/,''); const root=document.getElementById('app-root'); if(!hash || hash==='login'){ renderLogin(root); } else if(hash==='dashboard'){ renderTabLifecycle(root); } else if(hash==='admin'){ renderAdmin(root); } else if(hash.startsWith('order/')){ const id=hash.split('/')[1]; renderOrderDetail(id); } else { renderLogin(root); } }
+  const layout = el("div", { class: "layout" });
 
-window.addEventListener('hashchange', router);
+  // Sidebar tabs
+  const sidebar = el("aside", { class: "sidebar" });
+  ROLES[appState.session.role].forEach(tab => {
+    const btn = el("button", { class: "tab-btn" + (appState.activeTab === tab ? " active" : ""), on: { click: () => { appState.activeTab = tab; render(); } } }, tab);
+    sidebar.appendChild(btn);
+  });
 
-function render(){ const root=document.getElementById('app-root'); const session=getSession(); if(session){ if(!location.hash || location.hash==='#') location.hash='#/dashboard'; } else { location.hash = location.hash || '#/login'; } router(); document.getElementById('session-info').textContent = getSession()? (getSession().name + ' — ' + getSession().role) : 'Not signed in'; }
+  // Main content
+  const main = el("main", { class: "main" });
+  if (!appState.activeTab) appState.activeTab = ROLES[appState.session.role][0];
+  main.appendChild(renderTabContent(appState.activeTab));
 
+  layout.appendChild(sidebar);
+  layout.appendChild(main);
+
+  root.appendChild(layout);
+}
+
+function renderTabContent(tabName) {
+  const card = el("div", { class: "card" });
+  card.appendChild(el("h2", null, tabName));
+
+  if (tabName.includes("Request")) {
+    const list = el("ul");
+    appState.orders
+      .filter(o => appState.session.role === "admin" || o.createdBy === appState.session.email)
+      .forEach(o => {
+        const link = el("a", { on: { click: () => renderOrderDetail(o.id) } }, o.title + " (" + o.stage + ")");
+        list.appendChild(el("li", null, link));
+      });
+    card.appendChild(list);
+  } else {
+    card.appendChild(el("p", null, "Tab content goes here."));
+  }
+  return card;
+}
+
+function renderOrderDetail(id) {
+  const root = document.getElementById("app-root");
+  clear(root);
+
+  const order = appState.orders.find(o => o.id === id);
+  if (!order) {
+    root.appendChild(el("p", null, "Order not found."));
+    return;
+  }
+
+  const container = el("div", { class: "layout" },
+    el("aside", { class: "sidebar" },
+      el("button", { class: "tab-btn", on: { click: () => render() } }, "← Back to Dashboard")
+    ),
+    el("main", { class: "main" },
+      el("div", { class: "card" },
+        el("h2", null, order.title),
+        el("div", { class: "badge" }, order.stage),
+        el("p", null, "Priority: " + order.priority),
+        el("p", null, "Created by: " + order.createdBy),
+        el("p", null, order.description || "No description provided."),
+        el("label", null, "Change Stage:"),
+        (function(){
+          const sel = el("select");
+          STAGES.forEach(sg => {
+            const opt = el("option", { value: sg }, sg);
+            if (sg === order.stage) opt.selected = true;
+            sel.appendChild(opt);
+          });
+          sel.addEventListener("change", e => {
+            order.history.push({ when: new Date().toISOString(), by: appState.session.email, from: order.stage, to: e.target.value });
+            order.stage = e.target.value;
+            renderOrderDetail(id);
+          });
+          return sel;
+        })()
+      ),
+      el("div", { class: "card" },
+        el("h3", null, "History"),
+        el("ul", null,
+          order.history.map(h => el("li", null, `${h.when} — ${h.by} moved from "${h.from}" to "${h.to}"`))
+        )
+      )
+    )
+  );
+
+  root.appendChild(container);
+}
+
+// Initial render
 render();
 </script>
 </body>
 </html>
+
