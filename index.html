@@ -39,11 +39,11 @@ let appState = {
 
 function el(tag, props={}, ...children) {
   const element = document.createElement(tag);
-  if (props?.class) element.className = props?.class;
-  if (props?.style) Object.assign(element.style, props?.style);
-  if (props?.on) for (let e in props?.on) element.addEventListener(e, props?.on[e]);
-  if (props?.href) element.setAttribute("href", props?.href);
-  if (props?.value) element.value = props?.value;
+  if (props?.class) element.className = props.class;
+  if (props?.style) Object.assign(element.style, props.style);
+  if (props?.on) for (let e in props.on) element.addEventListener(e, props.on[e]);
+  if (props?.href) element.setAttribute("href", props.href);
+  if (props?.value) element.value = props.value;
   children.flat().forEach(c => {
     element.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
   });
